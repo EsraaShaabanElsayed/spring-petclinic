@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        SSH_CREDENTIALS = credentials('jenkins-key')  // Make sure this ID matches the credentials in Jenkins
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/EsraaShaabanElsayed/spring-petclinic.git', branch: 'main'
+            }
+        }
+        stage('Build') {
+            steps {
+                // Ensure Maven wrapper script is executable or use 'mvn' directly if installed
+                sh './mvnw clean package'  // Consider using 'mvn' if not using the wrapper
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    // Find the WAR file
+                    def warFile = sh(script: 'ls target/*.war || true', returnStdout: true).trim()
+                    if (warFile) {
+                        // Transfer the WAR file using SCP
+                        sshagent(credentials: [SSH_CREDENTIALS]) {
+                            sh "scp ${warFile} user@172.16.62.133:/var/lib/tomcat10/webapps/"
+                        }
+                    } else {
+                        error "No WAR file found to deploy."
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up, notifications, or other steps after the pipeline completes
+            echo 'Pipeline finished.'
+        }
+    }
+}
