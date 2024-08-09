@@ -1,4 +1,3 @@
-With that change noted, here’s an updated README file that focuses on the key aspects without including the full pipeline configuration:
 
 ---
 
@@ -57,5 +56,3 @@ This project demonstrates a practical application of Jenkins for automating the 
 This project is licensed under the [MIT License](LICENSE).
 
 ---
-
-This README now focuses on your contributions and expertise, highlighting the important details of the pipeline and your modifications to the project.
